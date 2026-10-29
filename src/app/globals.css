@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ground: #fbf8f2;
+  --surface: #ffffff;
+  --surface-2: #f4ecdd;
+  --text: #2a2420;
+  --text-soft: #6e6350;
+  --line: rgba(43, 36, 32, 0.14);
+  --line-strong: rgba(43, 36, 32, 0.28);
+  --ink: #1b1611;
+  --on-ink: #f4ebda;
+  --on-ink-soft: #b4a588;
+  --gold: #9c7526;
+  --gold-bright: #c69a46;
+  --gold-soft: #efe0bf;
+  --ok: #3f7a54;
+  --warn: #8a5e1c;
+  --danger: #9e3a2c;
+  --radius: 4px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
+  --color-gold: var(--gold);
+  --color-gold-bright: var(--gold-bright);
+  --color-gold-soft: var(--gold-soft);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-text-soft: var(--text-soft);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --font-display: var(--font-display), Georgia, serif;
+  --font-sans: var(--font-body), system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  line-height: 1.14;
+  text-wrap: balance;
+}
+
+.zbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 18px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  border: 1px solid transparent; transition: 0.16s ease; cursor: pointer;
+}
+.zbtn:disabled { opacity: 0.55; cursor: default; }
+.zbtn-gold { background: var(--gold-bright); color: #1b1611; border-color: var(--gold-bright); }
+.zbtn-gold:hover { background: var(--gold); border-color: var(--gold); }
+.zbtn-ink { background: var(--ink); color: var(--on-ink); }
+.zbtn-ghost { border-color: var(--line-strong); color: var(--text); background: transparent; }
+.zbtn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.zbtn-sm { padding: 8px 12px; font-size: 11px; }
+
+.zinput, .zselect, .ztextarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong);
+  border-radius: var(--radius); background: var(--ground); color: var(--text);
+  font: inherit; font-size: 14px;
+}
+.ztextarea { min-height: 72px; resize: vertical; }
+.zlabel {
+  display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-soft); margin-bottom: 6px;
+}
+.zcard { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; }
+
+table.ztable { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.ztable th {
+  text-align: left; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-soft); padding: 11px 13px; border-bottom: 1px solid var(--line-strong); white-space: nowrap;
+}
+table.ztable td { padding: 11px 13px; border-bottom: 1px solid var(--line); }
+table.ztable tr:last-child td { border-bottom: 0; }
+table.ztable tr:hover td { background: var(--surface-2); }
+.znum { text-align: right; font-variant-numeric: tabular-nums; }
+.zpill { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; }
+.zpill-ok { background: #e4efe4; color: var(--ok); }
+.zpill-off { background: var(--surface-2); color: var(--text-soft); }

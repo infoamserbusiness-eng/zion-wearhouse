@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ZION Wear House — plataforma
 
-## Getting Started
+App Next.js 16 (App Router) + Supabase + Vercel.
+Fase 0: panel interno de inventario. La tienda pública está oculta tras “Próximamente”.
 
-First, run the development server:
+## Desarrollo local
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # y completa los valores
+npm run dev -- -p 3020
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `http://localhost:3020` → página “Próximamente”.
+- `http://localhost:3020/admin` → panel (pide login).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> Nunca correr `npm install` sobre Google Drive. El repo de trabajo vive en
+> `C:\Users\USUARIO\dev\zion`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Variables de entorno
 
-## Learn More
+| Variable | Dónde se usa | Notas |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | cliente + servidor | Dashboard → Project Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | cliente + servidor | anon/public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | **solo servidor** | Project Settings → API → `service_role`. Nunca al navegador ni al repo. |
+| `NEXT_PUBLIC_STORE_LIVE` | cliente | `false` mantiene la tienda oculta. Cámbialo a `true` sólo para lanzar. |
+| `NEXT_PUBLIC_SITE_NAME` | cliente | `ZION Wear House` |
 
-To learn more about Next.js, take a look at the following resources:
+## Base de datos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Migraciones en `supabase/migrations/` (ya aplicadas al proyecto `rflboojtpmdaerbgrmdl`):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. `0001_core.sql` — perfiles, ubicaciones, settings, RLS base.
+2. `0002_catalog_inventory.sql` — catálogo, variantes, inventario, compras, traspasos, POS, caja.
+3. `0003_storage_policies.sql` — bucket `product-images`.
 
-## Deploy on Vercel
+### Crear el primer administrador
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Dashboard de Supabase → Authentication → Users → **Add user** (con contraseña).
+2. En el SQL editor:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```sql
+   update public.profiles
+   set role = 'admin', is_active = true
+   where id = (select id from auth.users where email = 'TU_CORREO');
+   ```
+
+3. Ya puedes entrar a `/admin`.
+
+Para un vendedor de tienda física: `role = 'staff'` y `store_id` = id de su tienda
+(`select id, name from public.locations where type = 'store'`).
+
+## Deploy a Vercel (privado)
+
+1. `vercel` → import del repo `zion`.
+2. Environment Variables: las 5 de la tabla (con `NEXT_PUBLIC_STORE_LIVE=false`).
+3. Deploy. La raíz muestra “Próximamente”; `/admin` funciona con login.
+4. Para lanzar la tienda al público: cambia `NEXT_PUBLIC_STORE_LIVE=true` y vuelve a desplegar.
+
+## Rutas
+
+| Ruta | Qué es |
+| --- | --- |
+| `/` | Próximamente (o tienda si `STORE_LIVE=true`) |
+| `/admin/login` | Login del panel |
+| `/admin` | Redirige a `/admin/inventario` |
+| `/admin/inventario` | Catálogo maestro + stock en bodega |
+| `/admin/inventario/nuevo` | Registrar ingreso a bodega (costo, % comisión, PVP, foto, publicar) |
+| `/admin/logout` | Cierra sesión |
